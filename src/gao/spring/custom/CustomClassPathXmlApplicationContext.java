@@ -1,5 +1,10 @@
 package gao.spring.custom;
 
+import java.beans.IntrospectionException;
+import java.beans.Introspector;
+import java.beans.PropertyDescriptor;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -24,6 +29,7 @@ public class CustomClassPathXmlApplicationContext {
 	public CustomClassPathXmlApplicationContext(String filename) {
 		this.readXML(filename);
 		this.instanceBeans();
+		this.injectObject(); // 注入bean的属性
 	}
 
 	/**
@@ -52,8 +58,8 @@ public class CustomClassPathXmlApplicationContext {
 				for(Element property : propertys){
 					String propertyName = property.attributeValue("name");
 					String propertyRef = property.attributeValue("ref");
-					System.out.println("name="+propertyName);
-					System.out.println("ref="+propertyRef);
+//					System.out.println("name="+propertyName);
+//					System.out.println("ref="+propertyRef);
 					PropertyDefinition propertyDefinition = new PropertyDefinition(propertyName, propertyRef);
 					beanDefine.getPropertys().add(propertyDefinition);
 				}
@@ -90,5 +96,43 @@ public class CustomClassPathXmlApplicationContext {
 	// 根据id获取bean实例
 	public Object getBean(String id){
 		return singleInstance.get(id);
+	}
+	
+	// 注入bean的属性
+	private void injectObject() {
+		for(BeanDefinition beanDefinition : beanDefinitions){
+			Object bean = singleInstance.get(beanDefinition.getId());
+			if(bean != null){
+				try {
+					PropertyDescriptor[] ps = Introspector.getBeanInfo(bean.getClass()).getPropertyDescriptors();
+					for(PropertyDefinition propertyDefinition : beanDefinition.getPropertys()){
+						for(PropertyDescriptor propertyDescriptor : ps){
+							if(propertyDefinition.getName().equals(propertyDescriptor.getName())){
+								Method setter = propertyDescriptor.getWriteMethod(); // 获取属性的setter方法
+								if(setter != null){
+									Object value = singleInstance.get(propertyDefinition.getRef());
+									setter.setAccessible(true); // 允许访问私有的方法
+									setter.invoke(bean, value); // 把属性注入到对应的bean当中
+								}		
+								break;
+							}
+						}
+					}
+				} catch (IntrospectionException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (IllegalAccessException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (IllegalArgumentException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (InvocationTargetException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		}
+		
 	}
 }
