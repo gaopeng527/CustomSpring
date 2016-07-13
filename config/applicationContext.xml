@@ -3,11 +3,16 @@
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://www.springframework.org/schema/beans
         http://www.springframework.org/schema/beans/spring-beans.xsd">
+	<bean id="personDao" class="gao.spring.dao.impl.PersonDaoImpl"></bean>
 	<!-- 使用构造方法实例化bean对象，默认为单例，如果在配置文件中指定scope="prototype"则不是单例模式，每次产生一个新的对象 -->
-	<bean id="personService" class="gao.spring.service.impl.PersonServiceImpl" lazy-init="false" init-method="init" destroy-method="destory"></bean>
+	<bean id="personService" class="gao.spring.service.impl.PersonServiceImpl" lazy-init="false" init-method="init" destroy-method="destory">
+		<!-- 服务层调用Dao层，注入dao层接口 -->
+		<property name="personDao" ref="personDao"></property>
+	</bean>
 	<!-- 使用静态工厂方法实例化bean对象 -->
 	<bean id="personService2" class="gao.spring.service.impl.PersonServiceFactory" factory-method="createPersonServiceBeanStatic"></bean>
 	<!-- 使用非静态工厂方法实例化bean对象，首先得采用构造方法实例化工厂 -->
 	<bean id="personServiceFactory" class="gao.spring.service.impl.PersonServiceFactory"></bean>
 	<bean id="personService3" factory-bean="personServiceFactory" factory-method="createPersonServiceBeanNonStatic"></bean>
+	
 </beans>
