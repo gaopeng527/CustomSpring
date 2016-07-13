@@ -46,6 +46,17 @@ public class CustomClassPathXmlApplicationContext {
 				String id = element.attributeValue("id");// 获取id属性值
 				String clazz = element.attributeValue("class"); // 获取class属性值
 				BeanDefinition beanDefine = new BeanDefinition(id, clazz);
+				XPath propertysub = element.createXPath("ns:property"); // property的相对路径
+				propertysub.setNamespaceURIs(nsMap);// 设置命名空间
+				List<Element> propertys = propertysub.selectNodes(element);
+				for(Element property : propertys){
+					String propertyName = property.attributeValue("name");
+					String propertyRef = property.attributeValue("ref");
+					System.out.println("name="+propertyName);
+					System.out.println("ref="+propertyRef);
+					PropertyDefinition propertyDefinition = new PropertyDefinition(propertyName, propertyRef);
+					beanDefine.getPropertys().add(propertyDefinition);
+				}
 				beanDefinitions.add(beanDefine);
 			}
 		} catch (Exception e) {
