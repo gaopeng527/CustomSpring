@@ -11,6 +11,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.beanutils.ConvertUtils;
 import org.dom4j.Document;
 import org.dom4j.Element;
 import org.dom4j.XPath;
@@ -58,9 +59,10 @@ public class CustomClassPathXmlApplicationContext {
 				for(Element property : propertys){
 					String propertyName = property.attributeValue("name");
 					String propertyRef = property.attributeValue("ref");
+					String propertyValue = property.attributeValue("value");
 //					System.out.println("name="+propertyName);
 //					System.out.println("ref="+propertyRef);
-					PropertyDefinition propertyDefinition = new PropertyDefinition(propertyName, propertyRef);
+					PropertyDefinition propertyDefinition = new PropertyDefinition(propertyName, propertyRef, propertyValue);
 					beanDefine.getPropertys().add(propertyDefinition);
 				}
 				beanDefinitions.add(beanDefine);
@@ -110,7 +112,12 @@ public class CustomClassPathXmlApplicationContext {
 							if(propertyDefinition.getName().equals(propertyDescriptor.getName())){
 								Method setter = propertyDescriptor.getWriteMethod(); // 获取属性的setter方法
 								if(setter != null){
-									Object value = singleInstance.get(propertyDefinition.getRef());
+									Object value = null;
+									if(propertyDefinition.getRef()!=null && !"".equals(propertyDefinition.getRef().trim())){
+										value = singleInstance.get(propertyDefinition.getRef());
+									} else {
+										value = ConvertUtils.convert(propertyDefinition.getValue(), propertyDescriptor.getPropertyType());
+									}		
 									setter.setAccessible(true); // 允许访问私有的方法
 									setter.invoke(bean, value); // 把属性注入到对应的bean当中
 								}		
