@@ -20,8 +20,8 @@ public class SpringTest {
 	public void instanceSpring() throws Exception {
 		AbstractApplicationContext applicationContext = new ClassPathXmlApplicationContext("applicationContext.xml");
 //		ApplicationContext applicationContext = new ClassPathXmlApplicationContext("applicationContext.xml");
-//		PersonService personService = (PersonService) applicationContext.getBean("personService");
-//		personService.save();
+		PersonService personService = (PersonService) applicationContext.getBean("personService");
+		personService.save();
 		applicationContext.close();
 	}
 	
@@ -29,8 +29,8 @@ public class SpringTest {
 	@Test
 	public void testCustomClassPathXmlApplicationContext() throws Exception {
 		CustomClassPathXmlApplicationContext applicationContext = new CustomClassPathXmlApplicationContext("applicationContext.xml");
-		PersonService personService = (PersonService) applicationContext.getBean("personService");
-		personService.save();
+//		PersonService personService = (PersonService) applicationContext.getBean("personService");
+//		personService.save();
 	}
 	
 	// 使用静态工厂实例化bean对象
