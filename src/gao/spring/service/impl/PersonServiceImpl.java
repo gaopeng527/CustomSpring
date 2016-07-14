@@ -1,5 +1,13 @@
 package gao.spring.service.impl;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+import java.util.Set;
+
 import gao.spring.dao.PersonDao;
 import gao.spring.service.PersonService;
 
@@ -7,6 +15,16 @@ public class PersonServiceImpl implements PersonService {
 	private PersonDao personDao;
 	private String name;
 	private Integer id;
+	private Set<String> sets = new HashSet<>();
+	private List<String> lists = new ArrayList<>();
+	private Properties properties = new Properties();
+	private Map<String, String> map = new HashMap<>();
+	
+	// 构造方法，构造器注入
+	public PersonServiceImpl(PersonDao personDao, String name){
+		this.personDao = personDao;
+		this.name = name;
+	}
 	
 	public PersonServiceImpl() {
 		System.out.println("PersonServiceImpl初始化");
@@ -19,9 +37,13 @@ public class PersonServiceImpl implements PersonService {
 	
 	@Override
 	public void save() throws Exception {
-		System.out.println("这是save()方法");
+//		System.out.println("这是save()方法");
 		System.out.println("name: "+name);
-		System.out.println("id: "+id);
+//		System.out.println("id: "+id);
+//		System.out.println(lists);
+//		for(String key : map.keySet()){
+//			System.out.println(key+"="+map.get(key));
+//		}
 		personDao.add();
 	}
 	
@@ -52,6 +74,38 @@ public class PersonServiceImpl implements PersonService {
 
 	public void setId(Integer id) {
 		this.id = id;
+	}
+
+	public Set<String> getSets() {
+		return sets;
+	}
+
+	public void setSets(Set<String> sets) {
+		this.sets = sets;
+	}
+
+	public List<String> getLists() {
+		return lists;
+	}
+
+	public void setLists(List<String> lists) {
+		this.lists = lists;
+	}
+
+	public Properties getProperties() {
+		return properties;
+	}
+
+	public void setProperties(Properties properties) {
+		this.properties = properties;
+	}
+
+	public Map<String, String> getMap() {
+		return map;
+	}
+
+	public void setMap(Map<String, String> map) {
+		this.map = map;
 	}
 	
 }
