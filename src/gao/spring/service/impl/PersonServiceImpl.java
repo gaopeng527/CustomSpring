@@ -8,10 +8,13 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
+import javax.annotation.Resource;
+
 import gao.spring.dao.PersonDao;
 import gao.spring.service.PersonService;
 
 public class PersonServiceImpl implements PersonService {
+//	@Resource // 先按名字注入，找不到名字按类型注入，也可以@Resource(name="")来显式指明name
 	private PersonDao personDao;
 	private String name;
 	private Integer id;
@@ -38,7 +41,7 @@ public class PersonServiceImpl implements PersonService {
 	@Override
 	public void save() throws Exception {
 //		System.out.println("这是save()方法");
-		System.out.println("name: "+name);
+//		System.out.println("name: "+name);
 //		System.out.println("id: "+id);
 //		System.out.println(lists);
 //		for(String key : map.keySet()){
@@ -56,6 +59,7 @@ public class PersonServiceImpl implements PersonService {
 		return personDao;
 	}
 
+	@Resource // 也可以用于set方法注入
 	public void setPersonDao(PersonDao personDao) {
 		this.personDao = personDao;
 	}
