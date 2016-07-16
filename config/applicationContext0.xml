@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:aop="http://www.springframework.org/schema/aop" xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 
+		http://www.springframework.org/schema/beans/spring-beans-3.2.xsd 
+		http://www.springframework.org/schema/mvc 
+		http://www.springframework.org/schema/mvc/spring-mvc-3.2.xsd 
+		http://www.springframework.org/schema/context 
+		http://www.springframework.org/schema/context/spring-context-3.2.xsd 
+		http://www.springframework.org/schema/aop 
+		http://www.springframework.org/schema/aop/spring-aop-3.2.xsd 
+		http://www.springframework.org/schema/tx 
+		http://www.springframework.org/schema/tx/spring-tx-3.2.xsd ">
+	<!-- 配置处理注解的处理器 -->
+	<context:annotation-config></context:annotation-config>
+		
+	<bean id="personDao" class="gao.spring.dao.impl.PersonDaoImpl"></bean>
+	<!-- 使用构造方法实例化bean对象，默认为单例，如果在配置文件中指定scope="prototype"则不是单例模式，每次产生一个新的对象
+	加入autowire="byType"为自动注入，有byType,byName...可选值
+	 -->
+	<bean id="personService" class="gao.spring.service.impl.PersonServiceImpl" lazy-init="false" init-method="init" destroy-method="destory" autowire="byType">
+		<!-- 采用构造器注入，参数为基本类型type可以不写 -->
+		<!-- <constructor-arg index="0" type="gao.spring.dao.PersonDao" ref="personDao"></constructor-arg>
+		<constructor-arg index="1" value="服务层" ></constructor-arg> -->
+		
+		<!-- 服务层调用Dao层，注入dao层接口，方法一（外部bean） -->
+		<!-- <property name="personDao" ref="personDao"></property> -->
+		<!-- 服务层调用Dao层，注入dao层接口，方法二（内部bean） -->
+		<!-- <property name="personDao">
+			<bean class="gao.spring.dao.impl.PersonDaoImpl"></bean>
+		</property> -->
+		
+		<!-- 为基本属性注入值
+		<property name="name" value="service"></property>
+		<property name="id" value="66"></property> -->
+		
+		<!-- 注入Set集合属性 -->
+		<!-- <property name="sets">
+			<set>
+				<value>第一个</value>
+				<value>第二个</value>
+				<value>第三个</value>
+			</set>
+		</property> -->
+		
+		<!-- 注入List集合属性 -->
+		<!-- <property name="lists">
+			<list>
+				<value>first</value>
+				<value>second</value>
+				<value>third</value>
+			</list>
+		</property> -->
+		
+		<!-- 注入Properties属性 -->
+		<!-- <property name="properties">
+			<props>
+				<prop key="key1">value1</prop>
+				<prop key="key2">value2</prop>
+			</props>
+		</property> -->
+		
+		<!-- 注入Map集合属性 -->
+		<!-- <property name="map">
+			<map>
+				<entry key="key-1" value="value-1"></entry>
+				<entry key="key-2" value="value-2"></entry>
+			</map>
+		</property> -->
+	</bean>
+	<!-- 使用静态工厂方法实例化bean对象 -->
+	<bean id="personService2" class="gao.spring.service.impl.PersonServiceFactory" factory-method="createPersonServiceBeanStatic"></bean>
+	<!-- 使用非静态工厂方法实例化bean对象，首先得采用构造方法实例化工厂 -->
+	<bean id="personServiceFactory" class="gao.spring.service.impl.PersonServiceFactory"></bean>
+	<bean id="personService3" factory-bean="personServiceFactory" factory-method="createPersonServiceBeanNonStatic"></bean>
+	
+</beans>
