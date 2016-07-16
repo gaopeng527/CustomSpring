@@ -21,7 +21,8 @@ public class SpringTest {
 		AbstractApplicationContext applicationContext = new ClassPathXmlApplicationContext("applicationContext.xml");
 //		ApplicationContext applicationContext = new ClassPathXmlApplicationContext("applicationContext.xml");
 		PersonService personService = (PersonService) applicationContext.getBean("personService");
-		personService.save();
+		System.out.println(personService);
+//		personService.save();
 		applicationContext.close();
 	}
 	

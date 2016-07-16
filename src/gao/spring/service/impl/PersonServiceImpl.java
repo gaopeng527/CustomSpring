@@ -8,12 +8,18 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import javax.annotation.Resource;
+
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Service;
 
 import gao.spring.custom.CustomResource;
 import gao.spring.dao.PersonDao;
 import gao.spring.service.PersonService;
-
+// @Service默认的作用域范围是单例，如果想指定其他范围需要使用@Scope("prototype")注解
+@Service("personService")  // @Scope("prototype")
 public class PersonServiceImpl implements PersonService {
 //	@CustomResource // 先按名字注入，找不到名字按类型注入，也可以@Resource(name="")来显式指明name
 	private PersonDao personDao; // @Autowired是按类型注入，@Autowired @Qualifier("name") 按名称注入，@Autowired(require=true)默认为true必须注入值的意思
@@ -35,6 +41,7 @@ public class PersonServiceImpl implements PersonService {
 	}
 	
 	// 可在bean中被调用
+	@PostConstruct // 实现初始化的注解
 	public void init(){
 		System.out.println("初始化方法！");
 	}
@@ -52,6 +59,7 @@ public class PersonServiceImpl implements PersonService {
 	}
 	
 	// 可在bean中配置调用
+	@PreDestroy // 指定销毁前执行的注解
 	public void destory(){
 		System.out.println("关闭资源！");
 	}
