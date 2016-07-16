@@ -10,11 +10,12 @@ import java.util.Set;
 
 import javax.annotation.Resource;
 
+import gao.spring.custom.CustomResource;
 import gao.spring.dao.PersonDao;
 import gao.spring.service.PersonService;
 
 public class PersonServiceImpl implements PersonService {
-//	@Resource // 先按名字注入，找不到名字按类型注入，也可以@Resource(name="")来显式指明name
+	@CustomResource // 先按名字注入，找不到名字按类型注入，也可以@Resource(name="")来显式指明name
 	private PersonDao personDao;
 	private String name;
 	private Integer id;
@@ -59,7 +60,7 @@ public class PersonServiceImpl implements PersonService {
 		return personDao;
 	}
 
-	@Resource // 也可以用于set方法注入
+//	@Resource // 也可以用于set方法注入
 	public void setPersonDao(PersonDao personDao) {
 		this.personDao = personDao;
 	}
