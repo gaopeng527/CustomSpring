@@ -15,8 +15,8 @@ import gao.spring.dao.PersonDao;
 import gao.spring.service.PersonService;
 
 public class PersonServiceImpl implements PersonService {
-	@CustomResource // 先按名字注入，找不到名字按类型注入，也可以@Resource(name="")来显式指明name
-	private PersonDao personDao;
+//	@CustomResource // 先按名字注入，找不到名字按类型注入，也可以@Resource(name="")来显式指明name
+	private PersonDao personDao; // @Autowired是按类型注入，@Autowired @Qualifier("name") 按名称注入，@Autowired(require=true)默认为true必须注入值的意思
 	private String name;
 	private Integer id;
 	private Set<String> sets = new HashSet<>();

@@ -17,8 +17,10 @@
 	<context:annotation-config></context:annotation-config>
 		
 	<bean id="personDao" class="gao.spring.dao.impl.PersonDaoImpl"></bean>
-	<!-- 使用构造方法实例化bean对象，默认为单例，如果在配置文件中指定scope="prototype"则不是单例模式，每次产生一个新的对象 -->
-	<bean id="personService" class="gao.spring.service.impl.PersonServiceImpl" lazy-init="false" init-method="init" destroy-method="destory">
+	<!-- 使用构造方法实例化bean对象，默认为单例，如果在配置文件中指定scope="prototype"则不是单例模式，每次产生一个新的对象
+	加入autowire="byType"为自动注入，有byType,byName...可选值
+	 -->
+	<bean id="personService" class="gao.spring.service.impl.PersonServiceImpl" lazy-init="false" init-method="init" destroy-method="destory" autowire="byType">
 		<!-- 采用构造器注入，参数为基本类型type可以不写 -->
 		<!-- <constructor-arg index="0" type="gao.spring.dao.PersonDao" ref="personDao"></constructor-arg>
 		<constructor-arg index="1" value="服务层" ></constructor-arg> -->
