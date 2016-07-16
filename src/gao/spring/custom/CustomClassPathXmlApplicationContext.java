@@ -3,6 +3,8 @@ package gao.spring.custom;
 import java.beans.IntrospectionException;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
+import java.io.File;
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.URL;
@@ -11,11 +13,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.management.StandardEmitterMBean;
+
 import org.apache.commons.beanutils.ConvertUtils;
 import org.dom4j.Document;
 import org.dom4j.Element;
 import org.dom4j.XPath;
 import org.dom4j.io.SAXReader;
+import org.springframework.web.context.support.ServletContextAttributeExporter;
 /**
  * 自定义Spring容器
  * @author DELL
@@ -30,7 +35,82 @@ public class CustomClassPathXmlApplicationContext {
 	public CustomClassPathXmlApplicationContext(String filename) {
 		this.readXML(filename);
 		this.instanceBeans();
+		this.annotionInject(); // 注解的方式注入
 		this.injectObject(); // 注入bean的属性
+	}
+	
+	/**
+	 * 注解方式注入的方法
+	 */
+	private void annotionInject() {
+		for(String beanName : singleInstance.keySet()){
+			Object bean = singleInstance.get(beanName);
+			if(bean != null){
+				try {
+					PropertyDescriptor[] ps = Introspector.getBeanInfo(bean.getClass()).getPropertyDescriptors();
+					// 对属性（方法）进行处理
+					for(PropertyDescriptor propertyDescriptor : ps){
+						Method setter = propertyDescriptor.getWriteMethod(); // 获取属性的setter方法
+						if(setter != null && setter.isAnnotationPresent(CustomResource.class)){
+							CustomResource resource = setter.getAnnotation(CustomResource.class);
+							Object value = null;
+							if(resource.name() != null && !"".equals(resource.name())){
+								value = singleInstance.get(resource.name());
+							} else {
+								value = singleInstance.get(propertyDescriptor.getName());
+								if(value == null){
+									for(String key : singleInstance.keySet()){
+										if(propertyDescriptor.getPropertyType().isAssignableFrom(singleInstance.get(key).getClass())){
+											value = singleInstance.get(key);
+											break;
+										}
+									}
+								}
+							}
+							setter.setAccessible(true); // 允许访问私有的方法
+							setter.invoke(bean, value); // 把属性注入到对应的bean当中
+						}
+					}
+					// 对字段进行处理
+					Field[] fields = bean.getClass().getDeclaredFields();
+					for(Field field : fields){
+						if(field.isAnnotationPresent(CustomResource.class)){
+							CustomResource resource = field.getAnnotation(CustomResource.class);
+							Object value = null;
+							if(resource.name() != null && !"".equals(resource.name())){
+								value = singleInstance.get(resource.name());
+							} else {
+								value = singleInstance.get(field.getName());
+								if(value == null){
+									for(String key : singleInstance.keySet()){
+										if(field.getType().isAssignableFrom(singleInstance.get(key).getClass())){
+											value = singleInstance.get(key);
+											break;
+										}
+									}
+								}
+							}
+							field.setAccessible(true); // 允许访问私有字段
+							field.set(bean, value); // 注入字段的值
+						}
+					}
+					
+				} catch (IntrospectionException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (IllegalAccessException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (IllegalArgumentException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (InvocationTargetException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		}
+		
 	}
 
 	/**
